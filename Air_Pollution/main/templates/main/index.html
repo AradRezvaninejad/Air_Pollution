@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .aqi-good { background-color: #4ade80; }
+        .aqi-moderate { background-color: #facc15; }
+        .aqi-unhealthy-sensitive { background-color: #f97316; }
+        .aqi-unhealthy { background-color: #ef4444; }
+        .aqi-very-unhealthy { background-color: #a855f7; }
+        .aqi-hazardous { background-color: #7f1d1d; }
+        .map-container {
+            height: 500px;
+            background-image: url('http://static.photos/nature/1200x630/42');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i data-feather="wind" class="text-green-500 dark:text-green-400 h-8 w-8"></i>
+                        <span class="ml-2 text-xl font-bold text-gray-800 dark:text-white">AirQuality</span>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="#" class="border-green-500 text-gray-900 dark:text-white inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                        <a href="#" class="border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">About</a>
+                        <a href="#" class="border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Cities</a>
+                        <a href="#" class="border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Contact</a>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+                    <button class="bg-gray-200 dark:bg-gray-700 rounded-full px-3 py-1 text-sm flex items-center">
+                        <span class="mr-1">EN</span>
+                        <i data-feather="chevron-down" class="w-4 h-4"></i>
+                    </button>
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <i data-feather="moon" class="hidden dark:block w-5 h-5"></i>
+                        <i data-feather="sun" class="dark:hidden w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="-mr-2 flex items-center sm:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500">
+                        <i data-feather="menu" class="block h-6 w-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden sm:hidden">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="#" class="bg-green-50 border-green-500 text-green-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Home</a>
+                <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">About</a>
+                <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Cities</a>
+                <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Contact</a>
+                <div class="pt-4 pb-3 border-t border-gray-200">
+                    <div class="flex items-center px-4 space-x-4">
+                        <button class="bg-gray-200 rounded-full px-3 py-1 text-sm flex items-center">
+                            <span class="mr-1">EN</span>
+                            <i data-feather="chevron-down" class="w-4 h-4"></i>
+                        </button>
+                        <button id="mobile-theme-toggle" class="p-2 rounded-full hover:bg-gray-200">
+                            <i data-feather="moon" class="hidden dark:block w-5 h-5"></i>
+                            <i data-feather="sun" class="dark:hidden w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+<!-- Hero Section -->
+<section class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-500 to-green-500 dark:from-blue-700 dark:to-green-700 text-white">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center" data-aos="fade-up">
+            <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">Real-time Air Quality Monitoring</h1>
+            <p class="mt-6 max-w-2xl mx-auto text-xl">Check live air pollution levels in your city and protect your health.</p>
+            <div class="mt-8 max-w-md mx-auto">
+                <form method="get" class="relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-feather="search" class="h-5 w-5 text-gray-400"></i>
+                    </div>
+                    <input type="text" name="city" value="{{ city }}" 
+                        class="focus:ring-green-500 focus:border-green-500 block w-full pl-10 pr-12 py-4 border-gray-300 rounded-md text-gray-900" 
+                        placeholder="Enter your city...">
+                    <div class="absolute inset-y-0 right-0 flex items-center">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-r-md text-white font-medium">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Current Air Quality -->
+<section class="py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        {% if error %}
+            <h2 class="text-2xl font-bold text-red-600">{{ error }}</h2>
+        {% else %}
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Current Air Quality in {{ city }}</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- AQI Card -->
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden" data-aos="fade-up">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flex items-center">
+                            <div id="aqi-circle" class="flex-shrink-0 bg-green-500 rounded-full p-3">
+                                <i data-feather="activity" class="h-6 w-6 text-white"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300 truncate">Air Quality Index</dt>
+                                <dd class="flex items-baseline">
+                                    <div id="aqi-value" class="text-2xl font-semibold text-gray-900 dark:text-white">-</div>
+                                    <div id="aqi-text" class="ml-2 flex items-baseline text-sm font-semibold text-gray-600 dark:text-gray-400">-</div>
+                                </dd>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Health Recommendation -->
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-yellow-500 rounded-full p-3">
+                                <i data-feather="alert-triangle" class="h-6 w-6 text-white"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300 truncate">Health Recommendation</dt>
+                                <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                                    {% if air_data.main.aqi <= 2 %}
+                                        Air quality is good for everyone
+                                    {% elif air_data.main.aqi == 3 %}
+                                        Sensitive groups should reduce outdoor exertion
+                                    {% else %}
+                                        Everyone should limit outdoor activities
+                                    {% endif %}
+                                </dd>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary Pollutant -->
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-red-500 rounded-full p-3">
+                                <i data-feather="alert-circle" class="h-6 w-6 text-white"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300 truncate">Primary Pollutant</dt>
+                                <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                                    {% with air_data.components as c %}
+                                        {% if c.pm2_5 >= c.pm10 and c.pm2_5 >= c.no2 and c.pm2_5 >= c.o3 %}
+                                            PM2.5
+                                        {% elif c.pm10 >= c.no2 and c.pm10 >= c.o3 %}
+                                            PM10
+                                        {% elif c.no2 >= c.o3 %}
+                                            NO₂
+                                        {% else %}
+                                            O₃
+                                        {% endif %}
+                                    {% endwith %}
+                                </dd>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            {% with c=air_data.components %}
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="text-center">
+                                    <div class="text-xs text-gray-500 dark:text-gray-300">PM2.5</div>
+                                    <div class="font-medium text-red-500">{{ c.pm2_5 }} µg/m³</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-xs text-gray-500 dark:text-gray-300">PM10</div>
+                                    <div class="font-medium text-yellow-500">{{ c.pm10 }} µg/m³</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-xs text-gray-500 dark:text-gray-300">NO₂</div>
+                                    <div class="font-medium text-green-500">{{ c.no2 }} µg/m³</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-xs text-gray-500 dark:text-gray-300">O₃</div>
+                                    <div class="font-medium text-green-500">{{ c.o3 }} µg/m³</div>
+                                </div>
+                            </div>
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+    <!-- Map Section -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-100 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Global Air Quality Map</h2>
+            <div class="bg-white dark:bg-gray-700 shadow rounded-lg overflow-hidden" data-aos="fade-up">
+                <div class="map-container relative">
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                        <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Interactive Air Quality Map</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-4">This would display real-time air quality data from around the world with color-coded markers.</p>
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium">Explore Cities</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 dark:bg-gray-600">
+                    <div class="flex flex-wrap items-center justify-center gap-4">
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+                            <span class="text-sm text-gray-700 dark:text-gray-200">Good (0-50)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
+                            <span class="text-sm text-gray-700 dark:text-gray-200">Moderate (51-100)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-orange-500 mr-2"></div>
+                            <span class="text-sm text-gray-700 dark:text-gray-200">Unhealthy for Sensitive Groups (101-150)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+                            <span class="text-sm text-gray-700 dark:text-gray-200">Unhealthy (151-200)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>
+                            <span class="text-sm text-gray-700 dark:text-gray-200">Very Unhealthy (201-300)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-red-800 mr-2"></div>
+                            <span class="text-sm text-gray-700 dark:text-gray-200">Hazardous (301-500)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- City Ranking
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Most Polluted Cities Today</h2>
+                <div class="mt-4 md:mt-0">
+                    <select class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                        <option>All Countries</option>
+                        <option>United States</option>
+                        <option>China</option>
+                        <option>India</option>
+                        <option>Europe</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg" data-aos="fade-up">
+                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <li class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-red-800 flex items-center justify-center text-white font-bold">1</div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Delhi, India</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-300">AQI: 342 (Hazardous)</div>
+                            </div>
+                            <div class="ml-auto">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-800 text-white">PM2.5: 250 µg/m³</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold">2</div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Lahore, Pakistan</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-300">AQI: 278 (Very Unhealthy)</div>
+                            </div>
+                            <div class="ml-auto">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-500 text-white">PM2.5: 198 µg/m³</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-red-500 flex items-center justify-center text-white font-bold">3</div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Beijing, China</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-300">AQI: 187 (Unhealthy)</div>
+                            </div>
+                            <div class="ml-auto">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-500 text-white">PM2.5: 132 µg/m³</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">4</div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Jakarta, Indonesia</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-300">AQI: 142 (Unhealthy for Sensitive Groups)</div>
+                            </div>
+                            <div class="ml-auto">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-500 text-white">PM2.5: 98 µg/m³</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">5</div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Mexico City, Mexico</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-300">AQI: 97 (Moderate)</div>
+                            </div>
+                            <div class="ml-auto">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">PM2.5: 72 µg/m³</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-600 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</a>
+                        <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</a>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700 dark:text-gray-300">
+                                Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">100</span> cities
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Previous</span>
+                                    <i data-feather="chevron-left" class="h-5 w-5"></i>
+                                </a>
+                                <a href="#" aria-current="page" class="z-10 bg-green-50 border-green-500 text-green-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">1</a>
+                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">2</a>
+                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">3</a>
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>
+                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">8</a>
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Next</span>
+                                    <i data-feather="chevron-right" class="h-5 w-5"></i>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Charts Section -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-100 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Air Quality Trends</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-6" data-aos="fade-up">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">AQI Last 7 Days</h3>
+                    <div class="h-64">
+                        <canvas id="aqiChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-6" data-aos="fade-up" data-aos-delay="100">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Pollutant Composition</h3>
+                    <div class="h-64">
+                        <canvas id="pollutantChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Educational Section -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Understanding Air Quality</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden" data-aos="fade-up">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                                <i data-feather="info" class="h-6 w-6 text-white"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">What is AQI?</h3>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                            <p>The Air Quality Index (AQI) is a standardized way to report air quality levels. It transforms complex air quality data into a simple number that helps people understand how clean or polluted the air is and what associated health effects might be a concern.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                                <i data-feather="heart" class="h-6 w-6 text-white"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Health Impacts</h3>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                            <p>Poor air quality can affect your health in many ways. Short-term exposure can cause irritation of the eyes, nose and throat, while long-term exposure may lead to respiratory diseases, heart disease, and even lung cancer. Children, the elderly, and those with pre-existing conditions are most vulnerable.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                                <i data-feather="shield" class="h-6 w-6 text-white"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Protection Tips</h3>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Check air quality forecasts daily</li>
+                                <li>Limit outdoor exercise when AQI is high</li>
+                                <li>Use air purifiers indoors</li>
+                                <li>Wear N95 masks in hazardous conditions</li>
+                                <li>Keep windows closed during high pollution</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- News Section -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-100 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Latest News & Articles</h2>
+                <a href="#" class="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium">View All</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white dark:bg-gray-700 shadow rounded-lg overflow-hidden" data-aos="fade-up">
+                    <div class="h-48 bg-cover bg-center" style="background-image: url('http://static.photos/cityscape/640x360/1');"></div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
+                            <span>May 15, 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>5 min read</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">New Study Links Air Pollution to Cognitive Decline</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">Recent research suggests long-term exposure to air pollution may accelerate cognitive aging and increase dementia risk.</p>
+                        <a href="#" class="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium flex items-center">
+                            Read more <i data-feather="arrow-right" class="ml-1 w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-700 shadow rounded-lg overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    <div class="h-48 bg-cover bg-center" style="background-image: url('http://static.photos/technology/640x360/2');"></div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
+                            <span>May 10, 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>4 min read</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">How Cities Are Fighting Air Pollution</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">From green roofs to electric buses, innovative urban solutions are making a difference in air quality worldwide.</p>
+                        <a href="#" class="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium flex items-center">
+                            Read more <i data-feather="arrow-right" class="ml-1 w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-700 shadow rounded-lg overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                    <div class="h-48 bg-cover bg-center" style="background-image: url('http://static.photos/health/640x360/3');"></div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
+                            <span>May 5, 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>6 min read</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">The Best Air Purifying Plants for Your Home</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">Discover which houseplants are most effective at removing common indoor pollutants according to NASA research.</p>
+                        <a href="#" class="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium flex items-center">
+                            Read more <i data-feather="arrow-right" class="ml-1 w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 dark:bg-gray-900 text-white pt-12 pb-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center">
+                        <i data-feather="wind" class="text-green-400 h-8 w-8"></i>
+                        <span class="ml-2 text-xl font-bold">AirQuality</span>
+                    </div>
+                    <p class="mt-4 text-gray-400">Providing real-time air quality data to help you breathe easier and live healthier.</p>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="twitter" class="h-5 w-5"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="facebook" class="h-5 w-5"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="instagram" class="h-5 w-5"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="linkedin" class="h-5 w-5"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">Quick Links</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Cities</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">API Documentation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">Resources</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Air Quality Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Health Recommendations</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Research Studies</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Pollution Solutions</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">Subscribe</h3>
+                    <p class="mt-4 text-gray-400">Get daily air quality updates for your city.</p>
+                    <form class="mt-4">
+                        <div class="flex">
+                            <input type="email" placeholder="Your email" class="px-4 py-2 w-full rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900">
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-r-md text-white font-medium">Subscribe</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">Data sources: OpenAQ, WHO, and government monitoring stations</p>
+                <p class="text-gray-400 text-sm mt-4 md:mt-0">© 2023 AirQuality Monitor. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        themeToggle.addEventListener('click', function() {
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        });
+
+        mobileThemeToggle.addEventListener('click', function() {
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        });
+
+        // Mobile menu toggle
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // AQI Line Chart
+            const aqiCtx = document.getElementById('aqiChart').getContext('2d');
+            const aqiChart = new Chart(aqiCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'AQI',
+                        data: [65, 59, 80, 81, 76, 72, 69],
+                        backgroundColor: 'rgba(74, 222, 128, 0.2)',
+                        borderColor: 'rgba(74, 222, 128, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Pollutant Doughnut Chart
+            const pollutantCtx = document.getElementById('pollutantChart').getContext('2d');
+            const pollutantChart = new Chart(pollutantCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['PM2.5', 'PM10', 'NO₂', 'O₃', 'SO₂', 'CO'],
+                    datasets: [{
+                        data: [35, 25, 15, 10, 8, 7],
+                        backgroundColor: [
+                            '#EF4444',
+                            '#F59E0B',
+                            '#10B981',
+                            '#3B82F6',
+                            '#8B5CF6',
+                            '#EC4899'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#6B7280'
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+    const input = document.querySelector('input[placeholder="Enter your city..."]');
+    const button = document.querySelector('button');
+
+    button.addEventListener('click', function () {
+        const city = input.value.trim();
+        if (!city) return alert('Please enter a city');
+
+        fetch(`/get-air/?city=${city}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) return alert(data.error);
+
+                // عدد AQI
+                document.getElementById('aqi-value').textContent = data.aqi;
+
+                // رنگ و توضیح
+                document.getElementById('aqi-text').textContent = data.aqi_text;
+                document.getElementById('aqi-circle').className = `flex-shrink-0 bg-${data.aqi_color}-500 rounded-full p-3`;
+
+                // آلاینده‌ها
+                const c = data.components;
+                document.getElementById('pm25').textContent = c.pm2_5 + ' µg/m³';
+                document.getElementById('pm10').textContent = c.pm10 + ' µg/m³';
+                document.getElementById('no2').textContent = c.no2 + ' µg/m³';
+                document.getElementById('o3').textContent = c.o3 + ' µg/m³';
+            });
+    });
+});
+
+        // Replace feather icons
+        feather.replace();
+    </script>
+</body>
+</html>
