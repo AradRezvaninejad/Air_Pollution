@@ -31,3 +31,5 @@ whitenoise>=6.6,<7.0
 
 # PostgreSQL
 # psycopg2>=2.9,<3.0
+
+django-modeltranslation>=0.22,<0.23
