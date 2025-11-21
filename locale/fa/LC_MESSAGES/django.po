@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-21 21:50+0330\n"
+"PO-Revision-Date: 2025-11-21 21:53+0000\n"
+"Last-Translator:   <admin@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Translated-Using: django-rosetta 0.10.2\n"
+
+#: .\main\templates\main\index.html:8
+msgid "Air Quality Monitor"
+msgstr "مانیتور کیفیت هوا"
+
+#: .\main\templates\main\index.html:39 .\main\templates\main\index.html:766
+msgid "AirQuality"
+msgstr "کیفیت هوا"
+
+#: .\main\templates\main\index.html:42 .\main\templates\main\index.html:83
+msgid "Home"
+msgstr "خانه"
+
+#: .\main\templates\main\index.html:84
+msgid "About"
+msgstr "درباره"
+
+#: .\main\templates\main\index.html:85
+msgid "Cities"
+msgstr "شهرها"
+
+#: .\main\templates\main\index.html:86
+msgid "Contact"
+msgstr "تماس"
+
+#: .\main\templates\main\index.html:107
+msgid "Real-time Air Quality Monitoring"
+msgstr "نظارت بر کیفیت هوا در زمان واقعی"
+
+#: .\main\templates\main\index.html:108
+msgid "Check live air pollution levels in your city and protect your health."
+msgstr ""
+"میزان آلودگی هوای شهر خود را به صورت زنده بررسی کنید و از سلامت خود محافظت "
+"کنید"
+
+#: .\main\templates\main\index.html:122
+msgid "Enter your city..."
+msgstr "شهر خود را وارد کنید..."
+
+#: .\main\templates\main\index.html:128
+msgid "Search"
+msgstr "جستجو"
+
+#: .\main\templates\main\index.html:208
+msgid "Current Air Quality in"
+msgstr "کیفیت هوای فعلی در"
+
+#: .\main\templates\main\index.html:238
+msgid "Air Quality Index"
+msgstr "شاخص کیفیت هوا"
+
+#: .\main\templates\main\index.html:262
+msgid "Health Recommendation"
+msgstr "توصیه‌های بهداشتی"
+
+#: .\main\templates\main\index.html:265
+msgid "Air quality is good for everyone"
+msgstr "کیفیت هوا برای همه خوب است"
+
+#: .\main\templates\main\index.html:267
+msgid "Sensitive groups should reduce outdoor exertion"
+msgstr "گروه‌های حساس فعالیت‌های خارج از منزل را کاهش دهند"
+
+#: .\main\templates\main\index.html:269
+msgid "Everyone should limit outdoor activities"
+msgstr "همه باید فعالیت‌های خارج از منزل را محدود کنند"
+
+#: .\main\templates\main\index.html:285
+msgid "Primary Pollutant"
+msgstr "آلاینده اولیه"
+
+#: .\main\templates\main\index.html:633
+msgid "Understanding Air Quality"
+msgstr "درک کیفیت هوا"
+
+#: .\main\templates\main\index.html:655
+msgid "No educational cards available."
+msgstr "کارت آموزشی موجود نیست."
+
+#: .\main\templates\main\index.html:723
+msgid "Latest News & Articles"
+msgstr "آخرین اخبار و مقالات"
+
+#: .\main\templates\main\index.html:733
+msgid "min read"
+msgstr "زمان مورد نیاز مطالعه"
+
+#: .\main\templates\main\index.html:739
+msgid "Read more "
+msgstr "ادامه مطلب"
+
+#: .\main\templates\main\index.html:768
+msgid ""
+"Providing real-time air quality data to help you breathe easier and live "
+"healthier."
+msgstr ""
+"ارائه داده‌های کیفیت هوا در لحظه برای کمک به شما در تنفس راحت‌تر و زندگی "
+"سالم‌تر"
+
+#: .\main\templates\main\index.html:791 .\main\templates\main\index.html:796
+msgid "Subscribe"
+msgstr "اشتراک"
+
+#: .\main\templates\main\index.html:792
+msgid "Get daily air quality updates for your city."
+msgstr "به‌روزرسانی‌های روزانه کیفیت هوا را برای شهر خود دریافت کنید."
+
+#~ msgid "Air Quality Trends"
+#~ msgstr "روندهای کیفیت هوا"
+
+#~ msgid "AQI Last 7 Days"
+#~ msgstr "شاخص کیفیت هوا (AQI) در ۷ روز گذشته"
+
+#~ msgid "Pollutant Composition"
+#~ msgstr "ترکیب آلاینده"
