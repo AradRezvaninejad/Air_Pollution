@@ -4,11 +4,6 @@ Django>=5.0,<5.1
 # Django REST framework
 djangorestframework>=3.15,<3.16
 
-# Data analysis & ML
-pandas>=2.2,<2.3
-numpy>=1.26,<1.27
-scikit-learn>=1.5,<1.6
-
 # Image processing
 Pillow>=10.0,<11.0
 
@@ -25,11 +20,35 @@ python-dotenv>=1.0,<2.0
 # Static file serving for Django
 whitenoise>=6.6,<7.0
 
-# Database clients (uncomment if needed)
-# MySQL
-# mysqlclient>=2.2,<3.0
-
-# PostgreSQL
-# psycopg2>=2.9,<3.0
 
 django-modeltranslation>=0.22,<0.23
+
+# Django core
+Django>=5.0
+
+# Django REST Framework (در صورت نیاز)
+djangorestframework>=3.15
+
+# Django Modeltranslation
+django-modeltranslation>=0.18
+
+pandas>=2.2
+numpy>=1.26
+
+
+scikit-learn>=1.5
+
+Pillow>=10.0
+
+
+google-cloud-translate>=3.15
+google-auth>=2.30
+
+requests>=2.32
+
+
+python-dotenv>=1.0
+
+
+
+plotly>=5.22
