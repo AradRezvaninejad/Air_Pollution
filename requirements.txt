@@ -1,56 +1,38 @@
 # Django framework
-Django>=5.0,<5.1
+Django
 
 # Django REST framework
-djangorestframework>=3.15,<3.16
+djangorestframework
 
 # Image processing
-Pillow>=10.0,<11.0
+Pillow
 
 # Google Cloud Translate
-google-cloud-translate>=3.15,<4.0
-google-auth>=2.30,<3.0
+google-cloud-translate
+google-auth
 
 # HTTP requests
-requests>=2.32,<3.0
+requests
 
 # Environment variables
-python-dotenv>=1.0,<2.0
+python-dotenv
 
 # Static file serving for Django
-whitenoise>=6.6,<7.0
-
-
-django-modeltranslation
-
-django-rosetta 
-
-# Django core
-Django>=4.2,<5.0
-
-# Django REST Framework (در صورت نیاز)
-djangorestframework>=3.15
+whitenoise
 
 # Django Modeltranslation
-django-modeltranslation>=0.18
+django-modeltranslation
 
-pandas>=2.2
-numpy>=1.26
+# Django Rosetta
+django-rosetta
 
+# Scientific packages
+numpy
+pandas
+scikit-learn
 
-scikit-learn>=1.5
+# Plotly
+plotly
 
-Pillow>=10.0
-
-
-google-cloud-translate>=3.15
-google-auth>=2.30
-
-requests>=2.32
-
-
-python-dotenv>=1.0
-
-
-
-plotly>=5.22
+# Gunicorn
+gunicorn
