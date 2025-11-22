@@ -20,8 +20,6 @@ python-dotenv
 # Static file serving for Django
 whitenoise
 
-# Django Modeltranslation
-django-modeltranslation
 
 # Django Rosetta
 django-rosetta
